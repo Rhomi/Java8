@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN 2.0//EN" "http://www.springframework.org/dtd/spring-beans-2.0.dtd">
+<!--  The DOCTYPE says that this is a Spring xml -->
+<!-- <beans> -->
+	<!-- Comments for exercise 1
+	The class attribute specifies the class for which the bean is to 
+	be initiated for. The id is reference to this particular bean. This helps 
+	for future reference for creation of new beans of similar blueprint. -->
+	
+	<!--  Note - 
+	For exercise 1, class =  "com.jb.Exercise1.Triangle"
+	For exercise 2, class =  "com.jb.Exercise2.Triangle"\
+	For exercise 3, class =  "com.jb.Exercise3.Triangle"-->
+	<!-- <bean id = "triangle" class = "com.jb.Exercise3.Triangle"> -->
+	
+	<!-- Comments for exercise 2 
+	We can mention the name of the property which we wanna preset
+	Here the property name would be "type"	
+	The value would be what the property needs to be set with.
+	-->
+	<!-- <property name="type" value="Equilateral"></property> -->
+	
+	<!--  Comments for exercise 3 
+	Constructor - arg doesn't have a name attribute.
+	
+	The second constructor-arg property sets the second property of the 
+	Triangle bean.
+	
+	Note that we are not specifying the type of the variables. We have specified
+	the values within quotes here like Strings. But Spring intelligently 
+	identifies their data types and converts them, looking at the constructor 
+	signature.
+	-->
+		<!-- <constructor-arg value="Equilateral" /> -->
+		<!-- <constructor-arg value="20.7" /> -->
+		
+	<!--  Comments for exercise 3 Part II
+	We intend to call the height constructor alone with this.
+	But notice that there are two constructor available now that accept a single
+	argument. So what happens when we run this without specifying the type.
+	-->
+		<!-- <constructor-arg value="20.7" /> -->
+	<!--  As expected, the first constructor was called and the output produced wass
+	"20.7 triangle Drawn with height 0.0". Lets fix this by specifying the type
+	so that the correct constructor will be called.
+	-->
+		<!-- <constructor-arg type="float" value="20.7" /> -->
+	<!-- The output that is produced now is
+	"null triangle Drawn with height 20.7"
+	Just what we wanted.
+	
+	Since float and String are represented the same way in spring, it was causing the
+	issue before. Hence we need to specify the type.
+	
+	Now, if we need to pass an argument to the other constructor as well, we 
+	have a way.
+	-->
+		<!-- <constructor-arg type="java.lang.String" value="Isosceles" /> -->
+	<!-- 
+	Note that the output now is "Isosceles triangle Drawn with height 20.7"
+	
+	Since String is an object, we need to specify the complete package name to 
+	specify its type.
+	
+	-->
+	
+	<!-- Comments for exercise 3 Part III
+	To make our lives easier, Spring provides us with an index option to 
+	set the property of the bean.
+	-->
+	<!-- 	<constructor-arg index="0" value="Some" />
+		<constructor-arg index="1" value="20.9" /> -->
+	<!-- 
+	That worked too.
+	-->
+	
+	<!-- Comments for exercise 4 Part I
+	Lets define 3 different beans for our 3 point objects.
+	And we'll use the property attribute to define the x and y values of the
+	points.
+	
+	But our job is only half done by doing this. The second half of dependency
+	injection is to inject the point object into our triangle object, so that
+	Spring will generate the beans for us, with the pre-populated values.
+	
+	Inside our triangle bean definition,
+	
+	We do the dependency injection.
+	We use the property attribute again to achieve this. 
+	Instead of using the value property, we use the "ref" element 
+	so that we could directly pass an object definition from the xml
+	itself. So, we pass the id of the point object definition here.
+	-->
+	
+<!-- <beans>
+	<bean id = "triangle" class = "com.jb.Exercise4.Triangle">
+		
+		<property name="pointA" ref="pointzero"></property>
+		<property name="pointB" ref="pointone"></property>
+		<property name="pointC" ref="pointtwo"></property>
+	</bean>
+	<bean id = "pointzero" class = "com.jb.Exercise4.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointone" class = "com.jb.Exercise4.Point">
+		<property name="x" value="5"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointtwo" class = "com.jb.Exercise4.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="-5"></property>
+	</bean> -->
+	
+	<!-- Comments for exercise 4 Part II
+	
+	Now that we have done this, in our main class, when context.getBean()
+	starts looking for the triangle object's definition, it looks up spring.xml
+	The bean, as it sees has 3 properties- pointA, pointB, pointC. 
+	
+	Here, we have given the reference handle to another set of beans.
+	So, Spring will initially create the point beans first. Then, instead of 
+	assigning them back to the main class, it assigns it as the property of
+	the triangle bean (the main bean that it is trying to construct).
+	
+	Once the triangle bean is created, it is gonna send it back to the main class
+	Spring does this all for us. We don't have to use a getBean() for all these 
+	points. We only have to do a getBean() on the first level object, which
+	here is the triangle object.
+	
+	As a result, we could have as many levels of nested objects within the first 
+	level object and thereby it saves us a lot of time, effort, coding etc.
+	
+	So lets say, the point object has another property. We could create a bean
+	definition of it in our spring.xml and hand a reference handle to the 
+	"point bean definition". This here is another level of nesting. The beans 
+	will be created in order. 
+	-->
+	
+	
+	<!-- Comments for exercise 5 Part I
+	Out of the three beans that we defined for the point objects of the triangle,
+	we see that some of them have specific value assigned to them and there is a
+	good chance that these points will never be used by other shapes as their
+	vertices.
+	
+	Except maybe pointzero which is the origin.
+	So let's say we know for a fact that the other two points wouldn't be used
+	by any other shapes or even triangles in the application, then there is no
+	meaning in defining them separately. Instead, we could add these beans 
+	inside the definition of the triangle bean's definition.
+	
+	This is how it will look like.
+	
+	We will remove the individual definitions of those beans that we are sure
+	wont be accessed by other shapes and add them to the current triangle bean's
+	definition.
+	
+	zeropoint will stay as an external bean.
+	 
+	-->
+	
+<!-- <beans>
+	<bean id = "triangle" class = "com.jb.Exercise5.Triangle">
+		<property name="pointA" ref="origin">
+			<idref="pointthree"/>
+		</property>
+		<property name="pointB">
+		 This bean is required only inside this triangle.
+		We can remove the ref element as we dont need a reference handle 
+		anymore. This lets us remove the id` element of the point bean as
+		well cos there is no referencing to an external bean involved anymore.
+		And this bean is not going to be accessed by other shapes as well.
+		
+		Even if it were to have an id element, it cant be accessed anywhere else. 
+		
+		These beans are called inner beans. Note that there is no performance
+		improvement achieved by doing this.
+		
+		
+			<bean class = "com.jb.Exercise5.Point">
+				<property name="x" value="5"></property>
+				<property name="y" value="0"></property>
+			</bean>
+		</property>
+		<property name="pointC">
+			<bean id = "pointtwo" class = "com.jb.Exercise5.Point">
+				<property name="x" value="0"></property>
+				<property name="y" value="-5"></property>
+			</bean>
+		</property>
+	</bean>
+	<bean id = "pointzero" class = "com.jb.Exercise5.Point" name="origin">
+		<property name="x" value="0"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	 -->
+	
+	<!-- Comments for exercise 5 Part II
+	
+	We could give alias names to our beans and that can be used to access these
+	beans, from within the xml as well as from outside.
+	
+	For example triangle bean has an alias as "triangle-shape" and now
+	context.getBeans("triangle-shape") will produce the same result as before.
+	
+	Now let try and access pointzero with an alias from the triangle bean.
+	Note that the name element is the one where you set your alias name.
+	
+	But always the best practice is to use the id for referencing.
+	It helps  in XML validation and debugging for large applications with 
+	thousands of beans.
+	-->
+	
+	
+	<!-- <alias name="triangle" alias="triangle-shape"/>
+	 -->
+	 
+	 
+	<!-- Comments for exercise 5 Part III
+	
+	Now, imagine that you go ahead and add these aliases and also you have thousands
+	of beans that it sometimes too overwhelming to keep track of them.
+	
+	In these cases, we could something called idref to make sure that whatever
+	bean is being referenced is already available. Otherwise this element is gonna
+	throw an error.
+	
+	Now, lets try and add an idref element with the value "pointthree" to the 
+	triangle bean (which is not available as of now). Its gonna throw an error.
+	-->
+	
+	<!-- Comments for exercise 6
+	
+	Autowiring is a very useful feature, but has to be used with caution.
+	
+	In our case, we could use the feature to autowire the three point beans
+	to the triangle bean without us having to code the mapping ourseleves.
+	By mapping I mean writing the property tag and referencing the point beans.
+	
+	It can be done when the bean id has the same name as the member variable's
+	name. 
+	Therefore, our bean ids for the point objects should be 
+	pointA, pointB, pointC as these are the names of the member variables of
+	the triangle class. And we say autowiring = "byName" to do it by the names.
+	
+	Note that we have not coded any property for the triangle bean.
+	
+	We can also autowire byType in the event when we have "only one" member variable
+	and one bean of each type.
+	
+	If the value of the class element matches with the class in which the
+	member variable is defined in, then autowiring happens.
+	In our case, lets say, our "point bean definition" has a different name other
+	than pointA, then Spring will look for the class type, when autowiring 
+	is to be done byType and tries to match it with the class type of the 
+	member variable (i.e. class type of point objects) that are declared inside
+	our triangle class.
+	
+	Again, note that it works only when there is a single member variable and 
+	only bean definition is available.
+	
+	The third way to do autowiring is by constructor. We were using the setters to
+	do autowiring in the previous methods. Now it's doing a constructor injection.
+	And constructor autowiring works only when there is only bean for one type.
+	When autowire is not mentioned at all, the default value is off
+	
+	The problem with autowiring is that even though it is a very good feature
+	that provides a high degree of automation, in a real world application 
+	where there are 100s and 1000s of beans, its very hard to find or debug any
+	issues when its all autowired. Its better that the refreneces are specified
+	cos its very easy to know whats happening because its easy to know the
+	dependencies. 
+	
+	Otherwise, its kind of tricky to figure out the dependencies. We'll be forced
+	to guess or assume what Spring is doing behind the autowiring when there is
+	an issue.
+	-->
+	
+<!-- <beans>
+	<bean id = "triangle" class = "com.jb.Exercise6.Triangle" autowire="byName">
+	</bean>
+	<bean id = "pointA" class = "com.jb.Exercise6.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointB" class = "com.jb.Exercise6.Point">
+		<property name="x" value="12"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointC" class = "com.jb.Exercise6.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="-45"></property>
+	</bean>
+</beans> -->
+
+
+<!-- Comments for exercise 7
+This is how list based dependency injection is done in Spring.
+Spring will take care of the type conversion for us i.e Converting the 
+type of the list elements into the desired type.
+
+In a similar way, sets and maps can be used too..
+
+This is something we dont normally use because usually large applications
+have larger lists and in those cases we usually get them from a property file 
+or get them out of a database.
+-->
+
+<beans>
+	<bean id = "triangle" class = "com.jb.Exercise7.Triangle">
+		<property name="points">
+			<list>
+				<ref bean = "pointzero"/>
+				<ref bean = "pointone"/>
+				<ref bean = "pointtwo"/>
+			</list>
+		</property>
+	</bean>
+	<bean id = "pointzero" class = "com.jb.Exercise7.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointone" class = "com.jb.Exercise7.Point">
+		<property name="x" value="61"></property>
+		<property name="y" value="0"></property>
+	</bean>
+	<bean id = "pointtwo" class = "com.jb.Exercise7.Point">
+		<property name="x" value="0"></property>
+		<property name="y" value="-75"></property>
+	</bean>
+</beans>
